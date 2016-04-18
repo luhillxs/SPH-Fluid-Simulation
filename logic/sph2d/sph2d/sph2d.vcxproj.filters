@@ -27,6 +27,9 @@
     <ClInclude Include="Timer.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="vector2D.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -36,6 +39,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Timer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vector2D.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
