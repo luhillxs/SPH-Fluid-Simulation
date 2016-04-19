@@ -33,6 +33,12 @@
     <ClInclude Include="Particle.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="color.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CMU462.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -45,6 +51,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="vector2D.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="color.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
