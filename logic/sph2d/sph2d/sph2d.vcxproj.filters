@@ -30,6 +30,9 @@
     <ClInclude Include="vector2D.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
