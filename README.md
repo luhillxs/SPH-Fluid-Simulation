@@ -1,5 +1,5 @@
 # SPH-Fluid-Simulation
-CMU 15-662 16Spring Final Project
+CMU 15-662 16Spring Final Project 
 Xiaoshan Lu (hilllo) and Sarvesh Subramanian (sarveshsvaran)
 
 ##Proposal
