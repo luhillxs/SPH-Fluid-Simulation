@@ -111,6 +111,12 @@ class Vector2D {
     return *this / this->norm();
   }
 
+  /**
+  *  Normalizes the vector.
+  */
+  inline void normalized(void) const {
+	  *this / this->norm();
+  }
 
 }; // clasd Vector2D
 
