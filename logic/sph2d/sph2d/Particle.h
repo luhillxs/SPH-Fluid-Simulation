@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vector2D.h"
+#include "color.h"
 
 using namespace CMU462;
 
@@ -11,6 +12,8 @@ public:
 	double m; // mass
 	double d; // density
 	double p; // pressure
+	Color c; // color
+	Vector2D f; // force
 
 	Vector2D a; // acceleration
 
