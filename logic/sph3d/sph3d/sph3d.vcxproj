@@ -155,6 +155,7 @@
     <ClInclude Include="vector3D.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Particle.cpp" />
     <ClCompile Include="sph3d.cpp" />
     <ClCompile Include="sphsystem.cpp" />
     <ClCompile Include="stdafx.cpp">
