@@ -1,0 +1,65 @@
+#pragma once
+
+#include "Particle.h"
+
+#include "CMU462.h"
+#include "misc.h"
+#include "vector3D.h"
+
+#include <vector>
+
+struct uint3
+{
+	unsigned int x;
+	unsigned int y;
+	unsigned int z;
+};
+
+class SPHSystem {
+public:
+	SPHSystem();
+	~SPHSystem();
+	void init(); // init_system
+	void run(); // animation
+
+private:
+	void update(); // updates every particles' velocity & position 
+
+	unsigned int pNum; // num_particle
+public: unsigned int pNumMax; // max_particle
+public: Particle* particles;
+
+private:
+	Vector3D worldSize; // world_size
+	double cellSize; //cell_size
+	uint3 gridSize; //grid_size
+	unsigned int cellNum; //tot_cell
+	Particle** cell;
+
+	double h; // radius of kernel
+	double h2; // kernel_2: kernel * kernel
+	double mass;
+	double kDens; // self_dens
+	double kColorLapl;
+
+	double timeStep; //time_step
+	Vector3D gravity;
+
+	
+	double wallDamping; // wall_damping
+	double restDens; //rest_density
+	double R; // gas_constant
+	double viscosity;
+	double surfNorm; // surf_norm
+	double surfCoe; // surf_coe
+
+	double poly6; // poly6_value
+	double spiky; // spiky_value
+	double visco; // visco_value
+
+	double poly6Grad; // gradient grad_poly6
+	double poly6Lapl; // laplace lplc_poly6
+
+};
+
+
