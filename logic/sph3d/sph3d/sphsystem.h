@@ -42,7 +42,11 @@ public:
 
 
 private:
-	void update(); // updates every particles' velocity & position 
+	void update(); // advection, updates every particles' velocity & position 
+	void buildTable(); // build_table, build the hash table of cells
+
+	unsigned int cellHash(int cx, int cy, int cz); // calc_cell_hash
+
 
 	unsigned int pNum; // num_particle
 	unsigned int pNumMax; // max_particle
