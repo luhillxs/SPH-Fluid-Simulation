@@ -16,7 +16,7 @@ SPHSystem::SPHSystem() {
 
 	worldSize.x = 0.64; worldSize.y = 0.64; worldSize.z = 0.64; // world_size
 	cellSize = h; //cell_size
-	gridSize.x = ceil(worldSize.x / h);	gridSize.y = ceil(worldSize.y / h);	gridSize.z = ceil(worldSize.z / h);//grid_size, 16*16*16
+	gridSize.x = (unsigned int)ceil(worldSize.x / h);	gridSize.y = (unsigned int)ceil(worldSize.y / h);	gridSize.z = (unsigned int)ceil(worldSize.z / h);//grid_size, 16*16*16
 	cellNum = gridSize.x * gridSize.y * gridSize.z; //tot_cell, 4096
 	cell = new Particle*[cellNum];
 	//std::cout << "gridSize: (" << gridSize.x << ", " << gridSize.y << ", " << gridSize.z << " ), cellNum: " << cellNum << std::endl;
@@ -90,8 +90,41 @@ void SPHSystem::init() {
 
 void SPHSystem::run() {
 	if (sysRunning) {
+		buildTable();
 		update();
 	}
+}
+
+void SPHSystem::buildTable() {
+	std::cout << "built cell hash table" << std::endl;
+	Particle *p;
+	unsigned int hash;
+
+	for (unsigned int i = 0; i < cellNum; i++) {
+		cell[i] = NULL;
+	}
+
+	for (unsigned int i = 0; i < pNum; i++) {
+		p = &(particles[i]);
+
+		// get position in grid(cell) of particle
+		int cx = int(floor(p->pos.x / cellSize));
+		int cy = int(floor(p->pos.y / cellSize));
+		int cz = int(floor(p->pos.z / cellSize));
+
+		hash = cellHash(cx, cy, cz);
+
+		if (cell[hash] == NULL) {
+			p->next = NULL;
+		}
+		else {
+			p->next = cell[hash];
+		}
+		cell[hash] = p;
+
+	}
+
+	
 }
 
 void SPHSystem::update() {
@@ -118,4 +151,16 @@ void SPHSystem::update() {
 		p->ev = (p->ev + p->vel) / 2.0; // TODO
 
 	}
+}
+
+unsigned int SPHSystem::cellHash(int cx, int cy, int cz) {
+	if (cx < 0 || cx >= int(gridSize.x) || cy < 0 || cx >= int(gridSize.y) || cz < 0 || cz >= int(gridSize.z)) {
+		return (unsigned int)0xffffffff;
+	}
+
+	cx = cx & (gridSize.x - 1);
+	cy = cy & (gridSize.y - 1);
+	cz = cz & (gridSize.z - 1);
+
+	return ((unsigned int)(cx)) + ((unsigned int)(cy)) * gridSize.x + ((unsigned int)(cz)) * gridSize.x * gridSize.y;
 }
