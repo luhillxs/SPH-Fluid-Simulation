@@ -16,9 +16,10 @@ SPHSystem::SPHSystem() {
 
 	worldSize.x = 0.64; worldSize.y = 0.64; worldSize.z = 0.64; // world_size
 	cellSize = h; //cell_size
-	gridSize.x = ceil(worldSize.x / h);	gridSize.y = ceil(worldSize.y / h);	gridSize.z = ceil(worldSize.z / h);//grid_size
-	cellNum = gridSize.x * gridSize.y * gridSize.z; //tot_cell
+	gridSize.x = ceil(worldSize.x / h);	gridSize.y = ceil(worldSize.y / h);	gridSize.z = ceil(worldSize.z / h);//grid_size, 16*16*16
+	cellNum = gridSize.x * gridSize.y * gridSize.z; //tot_cell, 4096
 	cell = new Particle*[cellNum];
+	//std::cout << "gridSize: (" << gridSize.x << ", " << gridSize.y << ", " << gridSize.z << " ), cellNum: " << cellNum << std::endl;
 
 	
 
@@ -44,7 +45,8 @@ SPHSystem::SPHSystem() {
 
 SPHSystem::~SPHSystem() {
 	std::cout << "deconstruct sph" << std::endl;
-	delete []particles;
+	delete[]particles;
+	delete[]cell;
 }
 
 void SPHSystem::init() {
@@ -84,6 +86,12 @@ void SPHSystem::init() {
 
 	if (pNum < pNumMax) pNumMax = pNum;
 
+}
+
+void SPHSystem::run() {
+	if (sysRunning) {
+		update();
+	}
 }
 
 void SPHSystem::update() {

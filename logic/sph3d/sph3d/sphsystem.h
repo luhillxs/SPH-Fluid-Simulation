@@ -20,16 +20,33 @@ public:
 	SPHSystem();
 	~SPHSystem();
 	void init(); // init_system
-	void run(); // animation
+
+	// animation, system run
+	void run(); 
+	void setRunning() {
+		sysRunning = true;
+	}
+	void stopRunning() {
+		sysRunning = false;
+	}
+	inline bool getRunningState() {
+		return sysRunning;
+	}
+
+	// get partical status for drawing
+	Particle* particles;
+	inline unsigned int getpNum() {
+		return pNum;
+	}
+
+
 
 private:
 	void update(); // updates every particles' velocity & position 
 
 	unsigned int pNum; // num_particle
-public: unsigned int pNumMax; // max_particle
-public: Particle* particles;
+	unsigned int pNumMax; // max_particle
 
-private:
 	Vector3D worldSize; // world_size
 	double cellSize; //cell_size
 	uint3 gridSize; //grid_size
@@ -59,6 +76,8 @@ private:
 
 	double poly6Grad; // gradient grad_poly6
 	double poly6Lapl; // laplace lplc_poly6
+
+	bool sysRunning;
 
 };
 
