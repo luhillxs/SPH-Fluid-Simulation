@@ -9,10 +9,8 @@ SPHSystem::SPHSystem() {
 	particles = new Particle[pNumMax];	
 	
 	h = 0.04; // radius of kernel
-	//double h2; // kernel_2: kernel * kernel
-	//double mass;
-	//double kDens; // self_dens
-	//double kColorLapl;
+	h2 = h * h; // kernel_2: kernel * kernel
+	mass = 0.02;
 
 	worldSize.x = 0.64; worldSize.y = 0.64; worldSize.z = 0.64; // world_size
 	cellSize = h; //cell_size
@@ -23,23 +21,25 @@ SPHSystem::SPHSystem() {
 
 	
 
-	//double timeStep; //time_step
-	//Vector3D gravity;
+	timeStep = 0.003; //time_step
+	gravity.x = 0.0; gravity.y = 6.8; gravity.z = 0.0;
 
-	//
 	wallDamping = -0.5f; // wall_damping
 	restDens = 1000.0; //rest_density
-	//double R; // gas_constant
-	//double viscosity;
-	//double surfNorm; // surf_norm
-	//double surfCoe; // surf_coe
+	R = 1.0; // gas_constant
+	viscosity = 6.5;
+	surfNorm = 6.0; // surf_norm
+	surfCoe = 0.1; // surf_coe
 
-	//double poly6; // poly6_value
-	//double spiky; // spiky_value
-	//double visco; // visco_value
+	poly6 = 315.0 / (64.0 * PI * pow(h,9)); // poly6_value
+	spiky = -45.0 / ( PI * pow(h,6)); // spiky_value
+	visco = 45.0 / ( PI * pow(h,6)); // visco_value
 
-	//double poly6Grad; // gradient grad_poly6
-	//double poly6Lapl; // laplace lplc_poly6
+	poly6Grad = -945 / ( 32 * PI * pow(h, 9)); // gradient grad_poly6
+	poly6Lapl = -945 / ( 8 * PI * pow(h, 9)); // laplace lplc_poly6
+
+	kDens = mass * poly6 * pow(h,6); // self_dens
+	kColorLapl = mass * poly6Lapl * h2 * (0 - 3 / 4 * h2); // self_lplc_color
 
 }
 
@@ -50,7 +50,7 @@ SPHSystem::~SPHSystem() {
 }
 
 void SPHSystem::init() {
-	std::cout << "initial particles" << std::endl;
+	std::cout << " - initial particles" << std::endl;
 
 	double initRange = 0.6;
 	double delta = h * 0.5;
@@ -89,14 +89,17 @@ void SPHSystem::init() {
 }
 
 void SPHSystem::run() {
+	std::cout << " - sph try run" << std::endl;
 	if (sysRunning) {
 		buildTable();
+		calDensPress();
+		calForceAdv();
 		update();
 	}
 }
 
 void SPHSystem::buildTable() {
-	std::cout << "built cell hash table" << std::endl;
+	std::cout << " -- built cell hash table" << std::endl;
 	Particle *p;
 	unsigned int hash;
 
@@ -108,12 +111,13 @@ void SPHSystem::buildTable() {
 		p = &(particles[i]);
 
 		// get position in grid(cell) of particle
-		int cx = int(floor(p->pos.x / cellSize));
-		int cy = int(floor(p->pos.y / cellSize));
-		int cz = int(floor(p->pos.z / cellSize));
+		p->cellPos.x = int(floor(p->pos.x / cellSize));
+		p->cellPos.y = int(floor(p->pos.y / cellSize));
+		p->cellPos.z = int(floor(p->pos.z / cellSize));
 
-		hash = cellHash(cx, cy, cz);
-
+		hash = calCellHash(p->cellPos);
+		std::cout << " --- cell hash: " << hash << std::endl;
+		
 		if (cell[hash] == NULL) {
 			p->next = NULL;
 		}
@@ -127,7 +131,146 @@ void SPHSystem::buildTable() {
 	
 }
 
+void SPHSystem::calDensPress() {
+	Particle *p;
+	Particle *np; //neighbour
+
+	// p->cellPos cell_pos
+	int3 nPos; // near_pos
+	unsigned int hash;
+
+	Vector3D deltaPos; // rel_pos, p->pos - np->pos
+
+	double r2; // r^2
+
+	// traverse every particle
+	for (unsigned int i = 0; i < pNum; i++) {
+		p = &(particles[i]);
+
+		p->dens = 0.0;
+		p->press = 0.0;
+
+		// traverse all neighbour cells
+		for (int x = -1; x <= 1; x++) {
+			for (int y = -1; y <= 1; y++) {
+				for (int z = -1; z <= 1; z++) {
+					// get all particles in a neighbour cell
+					nPos.x = p->cellPos.x + x;
+					nPos.y = p->cellPos.y + y;
+					nPos.z = p->cellPos.z + z;
+					hash = calCellHash(nPos);
+					if (hash == 0xffffffff)	continue;
+					np = cell[hash];
+
+					// traverse all particles in a cell
+					while (np != NULL) {
+						deltaPos = p->pos - np->pos;
+						r2 = deltaPos.norm2();
+
+						if ( r2<h2 && r2>EPS_D ) {
+							p->dens += mass * poly6 * pow(h2 - r2, 3);
+						}
+						np = np->next;
+					} // end while: traverse all particles in a cell
+
+				}
+			}
+		} // end for(for(for())): traverse all neighbour cells
+
+		p->dens = p->dens + kDens;
+		p->press = (pow(p->dens / restDens, 7) - 1) * R;
+	} // end for: traverse every particle
+}
+
+
+void SPHSystem::calForceAdv() {
+	Particle *p;
+	Particle *np; //neighbour
+
+	// p->cellPos cell_pos
+	int3 nPos; // near_pos
+	unsigned int hash;
+
+	Vector3D deltaPos; // rel_pos, p->pos - np->pos
+	Vector3D deltaVel; // rel_vel, np
+
+	double r; // radius between 2 particles
+	double r2; // r^2
+	double h_r; // kernel_r, kernel radius(h) - r
+	double volume; // V
+
+	double kPress; // pres_kernel
+	double kVisco; // visc_kernel
+
+	double tempForce; // temp_force
+
+	Vector3D colorGrad; // grad_color
+	double colorLapl; // lplc_color
+
+	for (unsigned int i = 0; i < pNum; i++) {
+		p = &(particles[i]);
+
+		// init accelerate and color gradient and laplace
+		for (int j = 0; j < 3; j++) { 
+			p->acc[j] = 0.0;
+			colorGrad[j] = 0.0;
+		}
+		colorLapl = 0.0;
+
+		// traverse all neighbour cells
+		for (int x = -1; x <= 1; x++) {
+			for (int y = -1; y <= 1; y++) {
+				for (int z = -1; z <= 1; z++) {
+					// get all particles in a neighbour cell
+					nPos.x = p->cellPos.x + x;
+					nPos.y = p->cellPos.y + y;
+					nPos.z = p->cellPos.z + z;
+					hash = calCellHash(nPos);
+					if (hash == 0xffffffff)	continue;
+					np = cell[hash];
+
+					// traverse all particles in a cell
+					while (np != NULL) {
+						deltaPos = p->pos - np->pos;
+						r2 = deltaPos.norm2();
+
+						if ( r2<h2 && r2>EPS_D ){
+							r = deltaPos.norm();
+							volume = mass / np->dens / 2;
+							h_r = h - r;
+
+							kPress = spiky * h_r * h_r;
+							tempForce = volume * (p->press + np->press) * kPress;
+							p->acc -= deltaPos * tempForce / r;
+
+							deltaVel = np->ev - p->ev;
+							kVisco = visco * (h_r);
+							tempForce = volume * viscosity * kVisco;
+							p->acc += deltaVel * tempForce;
+
+							double temp = (-1) * poly6Grad * volume * pow(h2 - r2, 2);
+							colorGrad += temp * deltaPos;
+							colorLapl += poly6Lapl * volume * (h2 - r2) * (r2 - 3 / 4 * (h2 - r2));
+						}
+						np = np->next;
+					} // end whild: traverse all particles in a cell
+
+				}
+			}
+		} // end for(for(for())): get all particles in a neighbour cell
+
+		colorLapl += kColorLapl / p->dens;
+		p->surfNorm = sqrt(colorGrad.norm2());
+
+		if ( p->surfNorm > surfNorm) {
+			p->acc += surfCoe * colorLapl * colorGrad / p->surfNorm;
+		}
+	} // end for: traverse every particle
+
+}
+
 void SPHSystem::update() {
+	std::cout << " -- update velocity and position" << std::endl;
 	Particle *p;
 	for (unsigned int i=0; i < pNum;i++) {
 		p = &(particles[i]);
@@ -153,14 +296,14 @@ void SPHSystem::update() {
 	}
 }
 
-unsigned int SPHSystem::cellHash(int cx, int cy, int cz) {
-	if (cx < 0 || cx >= int(gridSize.x) || cy < 0 || cx >= int(gridSize.y) || cz < 0 || cz >= int(gridSize.z)) {
+unsigned int SPHSystem::calCellHash(int3 pos) {
+	if (pos.x < 0 || pos.x >= int(gridSize.x) || pos.y < 0 || pos.x >= int(gridSize.y) || pos.z < 0 || pos.z >= int(gridSize.z)) {
 		return (unsigned int)0xffffffff;
 	}
 
-	cx = cx & (gridSize.x - 1);
-	cy = cy & (gridSize.y - 1);
-	cz = cz & (gridSize.z - 1);
+	pos.x = pos.x & (gridSize.x - 1);
+	pos.y = pos.y & (gridSize.y - 1);
+	pos.z = pos.z & (gridSize.z - 1);
 
-	return ((unsigned int)(cx)) + ((unsigned int)(cy)) * gridSize.x + ((unsigned int)(cz)) * gridSize.x * gridSize.y;
+	return ((unsigned int)(pos.x)) + ((unsigned int)(pos.y)) * gridSize.x + ((unsigned int)(pos.z)) * gridSize.x * gridSize.y;
 }
