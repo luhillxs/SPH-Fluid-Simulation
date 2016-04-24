@@ -37,7 +37,7 @@ public:
 	Vector3D acc; // acceleration
 	Vector3D ev;
 
-	double surfNorm;
+	double surfNorm; // for surface tension, colorGrad.norm()
 
 	Particle* next;
 

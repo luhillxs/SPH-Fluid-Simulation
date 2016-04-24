@@ -28,7 +28,7 @@ SPHSystem::SPHSystem() {
 	restDens = 1000.0; //rest_density
 	R = 1.0; // gas_constant
 	viscosity = 6.5;
-	surfNorm = 6.0; // surf_norm
+	surfNorm = 6.0; // surf_norm, surface tension tipping point
 	surfCoe = 0.1; // surf_coe
 
 	poly6 = 315.0 / (64.0 * PI * pow(h,9)); // poly6_value
@@ -204,6 +204,7 @@ void SPHSystem::calForceAdv() {
 
 	double tempForce; // temp_force
 
+	// surface tension
 	Vector3D colorGrad; // grad_color
 	double colorLapl; // lplc_color
 
@@ -260,7 +261,7 @@ void SPHSystem::calForceAdv() {
 		} // end for(for(for())): get all particles in a neighbour cell
 
 		colorLapl += kColorLapl / p->dens;
-		p->surfNorm = sqrt(colorGrad.norm2());
+		p->surfNorm = colorGrad.norm();
 
 		if ( p->surfNorm > surfNorm) {
 			p->acc += surfCoe * colorLapl * colorGrad / p->surfNorm;
@@ -280,14 +281,14 @@ void SPHSystem::update() {
 		p->pos += p->vel * timeStep;
 
 		// Bounding from the boundary
-		for (int i = 0; i < 3;i++) {
-			if (p->pos[i] >= worldSize[i] - BOUNDARY) {
-				p->vel[i] *= wallDamping;
-				p->pos[i] = worldSize[i] - BOUNDARY;
+		for (int j = 0; j < 3;j++) {
+			if (p->pos[j] >= worldSize[j] - BOUNDARY) {
+				p->vel[j] *= wallDamping;
+				p->pos[j] = worldSize[j] - BOUNDARY;
 			}
-			if (p->pos[i] < 0.0) {
-				p->vel[i] *= wallDamping;
-				p->pos[i] = 0.0 + BOUNDARY;
+			if (p->pos[j] < 0.0) {
+				p->vel[j] *= wallDamping;
+				p->pos[j] = 0.0 + BOUNDARY;
 			}
 		}
 

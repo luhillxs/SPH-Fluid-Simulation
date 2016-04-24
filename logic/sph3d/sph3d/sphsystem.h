@@ -11,21 +11,30 @@
 
 class SPHSystem {
 public:
+	//  1. new SPHSystem;
+	//	2. call init();
+	//	3. call run();
+	//	4. call setRunning() if want it to move; call stopRunning to stop;
+	//	5. get *particles and use i = getpNum(), particles[i]->pos to traverse all particles' position;   
+	//	6. call delete sph to deconstruct.
 	SPHSystem();
 	~SPHSystem();
+
 	void init(); // init_system
 
 	// animation, system run
-	void run(); 
+	void run();  // call setRunning() to let it run
 	inline void setRunning() { sysRunning = true; }
 	inline void stopRunning() { sysRunning = false; }
 	inline bool getRunningState() { return sysRunning; }
 
 	// get partical status for drawing
 	Particle* particles;
-	inline unsigned int getpNum() {
-		return pNum;
-	}
+	inline unsigned int getpNum() { return pNum; }
+
+	// get other variable might needed
+	inline Vector3D getWorldSize() { return worldSize; }
+
 
 
 
