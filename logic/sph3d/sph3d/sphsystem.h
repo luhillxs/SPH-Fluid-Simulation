@@ -8,12 +8,6 @@
 
 #include <vector>
 
-struct uint3
-{
-	unsigned int x;
-	unsigned int y;
-	unsigned int z;
-};
 
 class SPHSystem {
 public:
@@ -23,15 +17,9 @@ public:
 
 	// animation, system run
 	void run(); 
-	void setRunning() {
-		sysRunning = true;
-	}
-	void stopRunning() {
-		sysRunning = false;
-	}
-	inline bool getRunningState() {
-		return sysRunning;
-	}
+	inline void setRunning() { sysRunning = true; }
+	inline void stopRunning() { sysRunning = false; }
+	inline bool getRunningState() { return sysRunning; }
 
 	// get partical status for drawing
 	Particle* particles;
@@ -44,8 +32,10 @@ public:
 private:
 	void update(); // advection, updates every particles' velocity & position 
 	void buildTable(); // build_table, build the hash table of cells
+	void calDensPress(); // comp_dens_pres, calculate density and pressure
+	void calForceAdv(); // comp_force_adv
 
-	unsigned int cellHash(int cx, int cy, int cz); // calc_cell_hash
+	unsigned int calCellHash(int3 pos); // calc_cell_hash
 
 
 	unsigned int pNum; // num_particle
