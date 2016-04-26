@@ -116,7 +116,7 @@ void SPHSystem::buildTable() {
 		p->cellPos.z = int(floor(p->pos.z / cellSize));
 
 		hash = calCellHash(p->cellPos);
-		std::cout << " --- cell hash: " << hash << std::endl;
+		//std::cout << " --- cell hash: " << hash << std::endl;
 		
 		if (cell[hash] == NULL) {
 			p->next = NULL;
@@ -178,7 +178,7 @@ void SPHSystem::calcDensPress() {
 		} // end for(for(for())): traverse all neighbour cells
 
 		p->dens = p->dens + kDens;
-		p->press = (pow(p->dens / restDens, 7) - 1) * R;
+		p->press = (pow(p->dens / restDens, 7) - 1) * R; // Tait equation
 	} // end for: traverse every particle
 }
 
