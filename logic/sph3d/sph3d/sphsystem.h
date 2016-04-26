@@ -41,8 +41,8 @@ public:
 private:
 	void update(); // advection, updates every particles' velocity & position 
 	void buildTable(); // build_table, build the hash table of cells
-	void calDensPress(); // comp_dens_pres, calculate density and pressure
-	void calForceAdv(); // comp_force_adv
+	void calcDensPress(); // comp_dens_pres, calculate density and pressure
+	void calcForceAdv(); // comp_force_adv
 
 	unsigned int calCellHash(int3 pos); // calc_cell_hash
 

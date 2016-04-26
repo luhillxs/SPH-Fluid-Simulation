@@ -92,8 +92,8 @@ void SPHSystem::run() {
 	std::cout << " - sph try run" << std::endl;
 	if (sysRunning) {
 		buildTable();
-		calDensPress();
-		calForceAdv();
+		calcDensPress();
+		calcForceAdv();
 		update();
 	}
 }
@@ -131,7 +131,7 @@ void SPHSystem::buildTable() {
 	
 }
 
-void SPHSystem::calDensPress() {
+void SPHSystem::calcDensPress() {
 	Particle *p;
 	Particle *np; //neighbour
 
@@ -183,7 +183,7 @@ void SPHSystem::calDensPress() {
 }
 
 
-void SPHSystem::calForceAdv() {
+void SPHSystem::calcForceAdv() {
 	Particle *p;
 	Particle *np; //neighbour
 
