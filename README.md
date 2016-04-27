@@ -1,10 +1,10 @@
-# SPH-Fluid-Simulation
+SPH-Fluid-Simulation
 ===
 CMU 15-662 16Spring Final Project
 
 Xiaoshan Lu (xiaoshal) and Sarvesh Subramanian (sarveshs)
 
-##Proposal
+Proposal
 ---
 ###Option F: SPH Fluid Simulation
 1. We'll code from scratch.
@@ -12,7 +12,7 @@ Xiaoshan Lu (xiaoshal) and Sarvesh Subramanian (sarveshs)
 3. ~~We'll implement a 2D fluid simulation first.~~ 
 4. If we have time, we'll implement a 3D fluid simulation as well.
 
-##Installation
+Installation
 ---
 OS:   Window 7/8/10
 
@@ -22,14 +22,10 @@ Lib:  CMU462, GLEW, GLUT
 
 Setup:http://hilllo.com/final-project-1-set-up-opengl/
 
-##Implementation
+Implementation
 ---
-Hill:
+Hill: Implement the SPH Model.
 
-Implement the SPH Model.
-
-Sarvesh:
-
-Implement OpenGL and Marching Cube algorithm.
+Sarvesh: Implement OpenGL and Marching Cube algorithm.
 
 
