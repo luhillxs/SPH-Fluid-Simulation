@@ -200,7 +200,7 @@ void render_particles()
 	glPointSize(1.0f);
 	glColor3f(0.2f, 0.2f, 1.0f);
 
-	for(uint i=0; i<sph->getpNum(); i++)
+	for(unsigned int i=0; i<sph->getpNum(); i++)
 	{
 		glBegin(GL_POINTS);
 			glVertex3f(sph->particles[i].pos.x*sim_ratio.x+real_world_origin.x, 

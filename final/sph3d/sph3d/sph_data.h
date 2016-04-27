@@ -22,8 +22,6 @@
 #ifndef __SPHDATA_H__
 #define __SPHDATA_H__
 
-#include "sph_header.h"
-#include "sph_type.h"
 #include "vector3D.h"
 
 float window_width=1000;
