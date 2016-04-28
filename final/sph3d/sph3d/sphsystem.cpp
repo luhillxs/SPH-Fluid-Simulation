@@ -197,7 +197,7 @@ void SPHSystem::calcForceAdv() {
 	double r; // radius between 2 particles
 	double r2; // r^2
 	double h_r; // kernel_r, kernel radius(h) - r
-	double volume; // V
+
 
 	double kPress; // pres_kernel
 	double kVisco; // visc_kernel
@@ -236,22 +236,20 @@ void SPHSystem::calcForceAdv() {
 						r2 = deltaPos.norm2();
 
 						if ( r2<h2 && r2>EPS_D ){
+							// These parameters would be used in calculating acceleration of both pressure and viscosity
 							r = deltaPos.norm();
-							volume = mass / np->dens / 2;
 							h_r = h - r;
+							double temp = mass / (2 * np->dens * p->dens);
 
-							kPress = spiky * h_r * h_r;
-							tempForce = volume * (p->press + np->press) * kPress;
-							p->acc -= deltaPos * tempForce / r;
+							// acceleration of preesure
+							p->acc -= temp * spiky * (p->press + np->press) * h_r * h_r * deltaPos / deltaPos.norm();
 
+							// acceleration of viscosity
 							deltaVel = np->ev - p->ev;
-							kVisco = visco * (h_r);
-							tempForce = volume * viscosity * kVisco;
-							p->acc += deltaVel * tempForce;
+							p->acc += temp * viscosity * visco * deltaVel * h_r;
 
-							double temp = (-1) * poly6Grad * volume * pow(h2 - r2, 2);
-							colorGrad += temp * deltaPos;
-							colorLapl += poly6Lapl * volume * (h2 - r2) * (r2 - 3 / 4 * (h2 - r2));
+							colorGrad += (-1) * poly6Grad * (mass / np->dens) * pow(h2 - r2, 2) * deltaPos;
+							colorLapl += poly6Lapl * ( mass / np->dens ) * (h2 - r2) * (r2 - 3 / 4 * (h2 - r2));
 						}
 						np = np->next;
 					} // end whild: traverse all particles in a cell
@@ -260,12 +258,12 @@ void SPHSystem::calcForceAdv() {
 			}
 		} // end for(for(for())): get all particles in a neighbour cell
 
-		colorLapl += kColorLapl / p->dens;
-		p->surfNorm = colorGrad.norm();
-
+		// acceleration of surface tension
+		colorLapl += kColorLapl;
 		if ( p->surfNorm > surfNorm) {
-			p->acc += surfCoe * colorLapl * colorGrad / p->surfNorm;
+			p->acc += surfCoe * colorLapl * colorGrad / ( p->dens * colorGrad.norm());
 		}
+
 	} // end for: traverse every particle
 
 }
@@ -276,7 +274,7 @@ void SPHSystem::update() {
 	for (unsigned int i=0; i < pNum;i++) {
 		p = &(particles[i]);
 
-		p->vel += p->acc * timeStep / p->dens + gravity * timeStep;
+		p->vel += p->acc * timeStep + gravity * timeStep;
 
 		p->pos += p->vel * timeStep;
 

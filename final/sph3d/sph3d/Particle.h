@@ -30,7 +30,7 @@ public:
 	double dens; // density
 	double press; // pressure
 	//Color c; // color
-	//Vector3D force; // force
+	Vector3D visco; // force
 
 	int3 cellPos; // particle in which cell
 

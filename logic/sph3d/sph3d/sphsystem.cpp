@@ -179,6 +179,8 @@ void SPHSystem::calcDensPress() {
 
 		p->dens = p->dens + kDens;
 		p->press = (pow(p->dens / restDens, 7) - 1) * R; // Tait equation
+
+		std::cout << "press: " << p->press << std::endl;
 	} // end for: traverse every particle
 }
 
@@ -259,6 +261,8 @@ void SPHSystem::calcForceAdv() {
 				}
 			}
 		} // end for(for(for())): get all particles in a neighbour cell
+		
+		std::cout << "visco:" << p->acc;
 
 		colorLapl += kColorLapl / p->dens;
 		p->surfNorm = colorGrad.norm();
@@ -266,6 +270,7 @@ void SPHSystem::calcForceAdv() {
 		if ( p->surfNorm > surfNorm) {
 			p->acc += surfCoe * colorLapl * colorGrad / p->surfNorm;
 		}
+		std::cout << "tension:" << p->acc << std::endl;
 	} // end for: traverse every particle
 
 }
