@@ -31,7 +31,7 @@ Sarvesh: Implement OpenGL and Marching Cube algorithm.
 
 References:
 ---
-#####Thesis
+####Thesis
 
 Particle-Based Fluid Simulation for Interactive Applications by Matthias Müller, David Charypar and Markus Gross:
 
@@ -48,10 +48,14 @@ SPH survival kit:
 http://www8.cs.umu.se/kurser/TDBD24/VT06/lectures/sphsurvivalkit.pdf
 
 
-#####OpenGL
+####OpenGL
 
 Tutorial:
 
-http://www.opengl-tutorial.org/ Source Code: https://github.com/hilllo/ogl
+http://www.opengl-tutorial.org/ 
+
+Source Code: 
+
+https://github.com/hilllo/ogl
 
 
