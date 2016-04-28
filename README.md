@@ -38,7 +38,7 @@ Particle-Based Fluid Simulation for Interactive Applications by Matthias Müller
 http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.121.844&rep=rep1&type=pdf
 
 
-Fluid Simulation For Computer Graphics: A Tutorial in Grid Based and Particle Based Methods, Colin Braley and Adrian Sandu
+Fluid Simulation For Computer Graphics: A Tutorial in Grid Based and Particle Based Methods, Colin Braley and Adrian Sandu:
 
 http://cg.informatik.uni-freiburg.de/intern/seminar/gridFluids_fluid-EulerParticle.pdf
 
