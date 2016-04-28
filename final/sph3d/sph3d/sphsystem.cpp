@@ -198,12 +198,6 @@ void SPHSystem::calcForceAdv() {
 	double r2; // r^2
 	double h_r; // kernel_r, kernel radius(h) - r
 
-
-	double kPress; // pres_kernel
-	double kVisco; // visc_kernel
-
-	double tempForce; // temp_force
-
 	// surface tension
 	Vector3D colorGrad; // grad_color
 	double colorLapl; // lplc_color
