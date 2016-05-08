@@ -4,42 +4,42 @@
 
 SPHSystem::SPHSystem() {
 	//std::cout << "construct sph" << std::endl;
-	pNum = 0; // num_particle
-	pNumMax = 30000; // max_particle
+	pNum = 0; 
+	pNumMax = 30000; 
 	particles = new Particle[pNumMax];	
 	
 	h = 0.04; // radius of kernel
 	h2 = h * h; // kernel_2: kernel * kernel
 	mass = 0.02;
 
-	worldSize.x = 0.64; worldSize.y = 0.64; worldSize.z = 0.64; // world_size
-	cellSize = h; //cell_size
+	worldSize.x = 0.64; worldSize.y = 0.64; worldSize.z = 0.64; 
+	cellSize = h; 
 	gridSize.x = (unsigned int)ceil(worldSize.x / h);	gridSize.y = (unsigned int)ceil(worldSize.y / h);	gridSize.z = (unsigned int)ceil(worldSize.z / h);//grid_size, 16*16*16
-	cellNum = gridSize.x * gridSize.y * gridSize.z; //tot_cell, 4096
+	cellNum = gridSize.x * gridSize.y * gridSize.z; // 4096
 	cell = new Particle*[cellNum];
 	//std::cout << "gridSize: (" << gridSize.x << ", " << gridSize.y << ", " << gridSize.z << " ), cellNum: " << cellNum << std::endl;
 
 	
 
-	timeStep = 0.003; //time_step
+	timeStep = 0.003; 
 	gravity.x = 0.0; gravity.y = - 6.8; gravity.z = 0.0;
 
-	wallDamping = -0.5f; // wall_damping
-	restDens = 1000.0; //rest_density
-	R = 1.0; // gas_constant
+	wallDamping = -0.5f; 
+	restDens = 1000.0; 
+	R = 1.0; 
 	viscosity = 6.5;
-	surfNorm = 6.0; // surf_norm, surface tension tipping point
-	surfCoe = 0.1; // surf_coe
+	surfNorm = 6.0; //  surface tension tipping point
+	surfCoe = 0.1; // coefficient
 
-	poly6 = 315.0 / (64.0 * PI * pow(h,9)); // poly6_value
-	spiky = -45.0 / ( PI * pow(h,6)); // spiky_value
-	visco = 45.0 / ( PI * pow(h,6)); // visco_value
+	poly6 = 315.0 / (64.0 * PI * pow(h,9)); 
+	spiky = -45.0 / ( PI * pow(h,6)); 
+	visco = 45.0 / ( PI * pow(h,6)); 
 
-	poly6Grad = -945 / ( 32 * PI * pow(h, 9)); // gradient grad_poly6
-	poly6Lapl = -945 / ( 8 * PI * pow(h, 9)); // laplace lplc_poly6
+	poly6Grad = -945 / ( 32 * PI * pow(h, 9)); // gradient 
+	poly6Lapl = -945 / ( 8 * PI * pow(h, 9)); // laplace 
 
-	kDens = mass * poly6 * pow(h,6); // self_dens
-	kColorLapl = mass * poly6Lapl * h2 * (0 - 3 / 4 * h2); // self_lplc_color
+	kDens = mass * poly6 * pow(h,6); 
+	kColorLapl = mass * poly6Lapl * h2 * (0 - 3 / 4 * h2); 
 
 }
 
@@ -134,11 +134,10 @@ void SPHSystem::calcDensPress() {
 	Particle *p;
 	Particle *np; //neighbour
 
-	// p->cellPos cell_pos
-	int3 nPos; // near_pos
+	int3 nPos; // neighbour pos
 	unsigned int hash;
 
-	Vector3D deltaPos; // rel_pos, p->pos - np->pos
+	Vector3D deltaPos; // p->pos - np->pos
 
 	double r2; // r^2
 
@@ -186,20 +185,19 @@ void SPHSystem::calcForceAdv() {
 	Particle *p;
 	Particle *np; //neighbour
 
-	// p->cellPos cell_pos
-	int3 nPos; // near_pos
+	int3 nPos; // neighbour pos
 	unsigned int hash;
 
-	Vector3D deltaPos; // rel_pos, p->pos - np->pos
-	Vector3D deltaVel; // rel_vel, np
+	Vector3D deltaPos; // p->pos - np->pos
+	Vector3D deltaVel; // np->vel - p->vel
 
 	double r; // radius between 2 particles
 	double r2; // r^2
-	double h_r; // kernel_r, kernel radius(h) - r
+	double h_r; // kernel radius(h) - r
 
 	// surface tension
-	Vector3D colorGrad; // grad_color
-	double colorLapl; // lplc_color
+	Vector3D colorGrad; 
+	double colorLapl; 
 
 	for (unsigned int i = 0; i < pNum; i++) {
 		p = &(particles[i]);

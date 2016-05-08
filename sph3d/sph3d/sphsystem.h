@@ -41,28 +41,28 @@ public:
 private:
 	void update(); // advection, updates every particles' velocity & position 
 	void buildTable(); // build_table, build the hash table of cells
-	void calcDensPress(); // comp_dens_pres, calculate density and pressure
-	void calcForceAdv(); // comp_force_adv
+	void calcDensPress(); // calculate density and pressure
+	void calcForceAdv(); 
 
-	unsigned int calCellHash(int3 pos); // calc_cell_hash
+	unsigned int calCellHash(int3 pos); 
 
 
-	unsigned int pNum; // num_particle
-	unsigned int pNumMax; // max_particle
+	unsigned int pNum; // number of particles
+	unsigned int pNumMax; // maximum
 
-	Vector3D worldSize; // world_size
-	double cellSize; //cell_size
-	uint3 gridSize; //grid_size
-	unsigned int cellNum; //tot_cell
+	Vector3D worldSize;
+	double cellSize;
+	uint3 gridSize;
+	unsigned int cellNum; // total cell
 	Particle** cell;
 
 	double h; // radius of kernel
 	double h2; // kernel_2: kernel * kernel
 	double mass;
-	double kDens; // self_dens
+	double kDens; 
 	double kColorLapl;
 
-	double timeStep; //time_step
+	double timeStep;
 	Vector3D gravity;
 
 	

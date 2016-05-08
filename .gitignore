@@ -26,3 +26,6 @@
 *.exe
 *.out
 *.app
+/sph3d/sph3d/x64/Debug
+/sph3d/sph3d.VC.VC.opendb
+/sph3d/sph3d.VC.db
